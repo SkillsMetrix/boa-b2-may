@@ -1,23 +1,32 @@
 
-a= int(input('Enter the Value of a: '))
-b= int(input('Enter the Value of b: '))
+# declare the empty array
 
-c=a+b
-print(f"The addition is: {c} ")
+use_numbers=[]
+
+# ask the user to add the value
+
+data=int(input(' How many numbers you wana add...! '))
+print(f"loop will continue until : {data}")
+
+for i in range(data):
+    num= int(input(f" Enter Number {i+1} to insert "))
+    use_numbers.append(num)
+    print(use_numbers)
+total=0
+for num in use_numbers:
+   
+    
+    if(num%2 ==0):
+        print(f"{num} is even")
+    else:
+        print(f"{num} is odd")
+    total +=num
+print(f"addition is {total}")
+    
+    
 
 
 
--------
+#-------
 
 
-userAge=input('Enter your age ')
-age=int(userAge)
-
-if age <0:
-    print('Enter Valid Age')
-elif age<18:
-    print('Not allowed to Vote')
-elif age>=18 and age<79:
-    print('Allowed to Vote')
-else:
-    print('senior citizen')
