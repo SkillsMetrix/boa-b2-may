@@ -1,42 +1,17 @@
+# declare class
+class User():
+    name=''
+    email=''
+    #constructor
+    def __init__(self,name,email):
+        self.name=name
+        self.email=email
+    # this fun is called when user print the object
+    def __str__(self):
+        return(f" the username is {self.name} and email is {self.email}")
 
-# declare the empty array
+user= User('admin','admin@mail.com')
+print(user)
+        
 
-use_numbers=[]
-
-# ask the user to add the value
-
-data=int(input(' How many numbers you wana add...! '))
-print(f"loop will continue until : {data}")
-
-for i in range(data):
-    num= int(input(f" Enter Number {i+1} to insert "))
-    use_numbers.append(num)
-    print(use_numbers)
-total=0
-for num in use_numbers:
-   
-    
-    if(num%2 ==0):
-        print(f"{num} is even")
-    else:
-        print(f"{num} is odd")
-    total +=num
-print(f"addition is {total}")
-    
-    
-
-
-
-#-------
-
-
-
-userData=[12,13,14,15,16,17]
-print("even indexs with values")
-for i in range(0,len(userData),2):
-
-    print(f"Index {i} -> {userData[i]}")
-print("odd indexs with values")
-for i in range(1,len(userData),2):
-
-    print(f"Index {i} -> {userData[i]}")
+# object
