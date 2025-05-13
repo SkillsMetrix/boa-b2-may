@@ -1,15 +1,6 @@
-from pydantic import BaseModel
-class User(BaseModel):
-    uname: str
-    email: str
-    city: str
-
-
------
-
-
 
 from fastapi import FastAPI
+from random import randrange
 from schema import User
 app= FastAPI()
 
@@ -23,7 +14,11 @@ def loadusers():
 
 @app.post("/adduser")
 def addUser(udata:User):
-    print(udata.model_dump())
+    data= udata.model_dump()
+    data['id']= randrange(0,10000)
+    userData.append(data)
+    return {"user details":data}
+    
 
 
 
