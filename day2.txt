@@ -1,89 +1,21 @@
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
-from fastapi import FastAPI,HTTPException,status,APIRouter
-from random import randrange
-from . import schema
+SQL_DB = "sqlite:///./mytest.db"
 
-router= APIRouter(tags=["BOA DML APP"])
+engine = create_engine(
+    SQL_DB, connect_args={"check_same_thread": False}
 
-userData=[]
+)
+SessioLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# reused search the user with specific ID
-def searchUser(id):
-    for i,v in enumerate(userData):
-        if v['id']== id:
-            return i
-# delete data
-@router.delete("/deleteuser/{id}")
-def deleteUser(id:int):
-    data=searchUser(id)
-    if data ==None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail='Given ID not found')
-    userData.pop(data)
-    return {"User Deleted ": data}
-
-# update
-
-@router.put("/updateuser/{id}")
-def updateUser(id:int,udata:schema.User):
-    data=searchUser(id)
-    if data ==None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail='Given ID not found')
-    post=udata.model_dump()
-    post['id']=id
-    userData[data]=post
-    return {"User updated ": data}
-
-# add function which uses adduser to add in the userdata
-@router.post("/adduser",status_code=status.HTTP_201_CREATED)
-def addUser(udata:schema.User):
-    data= udata.model_dump()
-    data['id']= randrange(0,10000)
-    userData.append(data)
-    return {"user details":data}
-    
-
------
-
-from fastapi import FastAPI,HTTPException,status,APIRouter
-router= APIRouter(tags=["BOA Read APP"])
-
-userData=[]
-
-# reused search the user with specific ID
-def searchUser(id):
-    for i,v in enumerate(userData):
-        if v['id']== id:
-            return i
-
-# get function which uses loadusers to load the userdata
-@router.get("/loadusers")
-def loadusers():
-    return {'message':userData}
-
-# search the user
-@router.get("/loaduser/{id}")
-def findUser(id:int):
-    data=searchUser(id)
-    if data ==None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail='Given ID not found')
-    return {"User Details ": data}
+Base = declarative_base()
 
 
-----
-
-
-
-from fastapi import FastAPI
-from . import crudapp,readapp
-
-app= FastAPI()
-
-app.include_router(crudapp.router)
-app.include_router(readapp.router)
-
-    
-
-
-
-
-
+def get_connection():
+    db = SessioLocal()
+    try:
+        yield db
+    finally:
+        db.close()
