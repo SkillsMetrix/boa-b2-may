@@ -1,4 +1,7 @@
 
+pip install fastapi[all]
+
+-----
 from fastapi import FastAPI
 
 app= FastAPI()
