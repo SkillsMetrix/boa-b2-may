@@ -6,12 +6,24 @@ app= FastAPI()
 
 userData=[]
 
+# reused search the user with specific ID
+def searchUser(id):
+    for i,v in enumerate(userData):
+        if v['id']== id:
+            return v
 
 # get function which uses loadusers to load the userdata
 @app.get("/loadusers")
 def loadusers():
     return {'message':userData}
 
+# search the user
+@app.get("/loaduser/{id}")
+def findUser(id:int):
+    data=searchUser(id)
+    return {"User Details ": data}
+
+# add function which uses adduser to add in the userdata
 @app.post("/adduser")
 def addUser(udata:User):
     data= udata.model_dump()
