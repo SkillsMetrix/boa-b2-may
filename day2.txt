@@ -3,7 +3,7 @@ from fastapi import FastAPI,HTTPException,status,APIRouter
 from random import randrange
 from . import schema
 
-router= APIRouter(tags=["BOA USER APP"])
+router= APIRouter(tags=["BOA DML APP"])
 
 userData=[]
 
@@ -12,21 +12,6 @@ def searchUser(id):
     for i,v in enumerate(userData):
         if v['id']== id:
             return i
-
-# get function which uses loadusers to load the userdata
-@router.get("/loadusers")
-def loadusers():
-    return {'message':userData}
-
-# search the user
-@router.get("/loaduser/{id}")
-def findUser(id:int):
-    data=searchUser(id)
-    if data ==None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail='Given ID not found')
-    return {"User Details ": data}
-
-
 # delete data
 @router.delete("/deleteuser/{id}")
 def deleteUser(id:int):
@@ -57,15 +42,48 @@ def addUser(udata:schema.User):
     return {"user details":data}
     
 
-
-
 -----
+
+from fastapi import FastAPI,HTTPException,status,APIRouter
+router= APIRouter(tags=["BOA Read APP"])
+
+userData=[]
+
+# reused search the user with specific ID
+def searchUser(id):
+    for i,v in enumerate(userData):
+        if v['id']== id:
+            return i
+
+# get function which uses loadusers to load the userdata
+@router.get("/loadusers")
+def loadusers():
+    return {'message':userData}
+
+# search the user
+@router.get("/loaduser/{id}")
+def findUser(id:int):
+    data=searchUser(id)
+    if data ==None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail='Given ID not found')
+    return {"User Details ": data}
+
+
+----
 
 
 
 from fastapi import FastAPI
-from . import crudapp
+from . import crudapp,readapp
 
 app= FastAPI()
 
 app.include_router(crudapp.router)
+app.include_router(readapp.router)
+
+    
+
+
+
+
+
