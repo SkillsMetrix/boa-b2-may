@@ -14,8 +14,8 @@ app.include_router(readapp.router)
 
 
 
-from fastapi import HTTPException,status,APIRouter
-from random import randrange
+
+from fastapi import HTTPException,status,APIRouter,Depends
 from . import schema,models
 from .database import engine,get_connection
 from sqlalchemy.orm import Session
@@ -52,12 +52,15 @@ def updateUser(id:int,udata:schema.User):
 
 # add function which uses adduser to add in the userdata
 @router.post("/adduser",status_code=status.HTTP_201_CREATED)
-def addUser(udata:schema.User):
-    data= udata.model_dump()
-    data['id']= randrange(0,10000)
-    userData.append(data)
+def addUser(udata:schema.User,db:Session=Depends(get_connection)):
+
+    data= models.UserApp(**udata.model_dump())
+    db.add(data)
+    db.commit()
     return {"user details":data}
     
+
+
 
 
 
