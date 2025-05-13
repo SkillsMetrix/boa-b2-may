@@ -25,6 +25,28 @@ def findUser(id:int):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail='Given ID not found')
     return {"User Details ": data}
 
+
+# delete data
+@app.delete("/deleteuser/{id}")
+def deleteUser(id:int):
+    data=searchUser(id)
+    if data ==None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail='Given ID not found')
+    userData.pop(data)
+    return {"User Deleted ": data}
+
+# update
+
+@app.put("/updateuser/{id}")
+def updateUser(id:int,udata:User):
+    data=searchUser(id)
+    if data ==None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail='Given ID not found')
+    post=udata.model_dump()
+    post['id']=id
+    userData[data]=post
+    return {"User updated ": data}
+
 # add function which uses adduser to add in the userdata
 @app.post("/adduser",status_code=status.HTTP_201_CREATED)
 def addUser(udata:User):
