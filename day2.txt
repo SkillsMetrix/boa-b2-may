@@ -1,15 +1,29 @@
+from pydantic import BaseModel
+class User(BaseModel):
+    uname: str
+    email: str
+    city: str
+
+
+-----
+
+
 
 from fastapi import FastAPI
-
+from schema import User
 app= FastAPI()
 
-# get method , url -> /welcome
-# array of objects
-userData=[{'uname':'admin','email':'admin@mail.com','city':'pune'}]
+userData=[]
 
 
-
+# get function which uses loadusers to load the userdata
 @app.get("/loadusers")
 def loadusers():
     return {'message':userData}
+
+@app.post("/adduser")
+def addUser(udata:User):
+    print(udata.model_dump())
+
+
 
