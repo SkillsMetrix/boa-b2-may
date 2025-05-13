@@ -1,8 +1,9 @@
 
-from fastapi import FastAPI,HTTPException,status
+from fastapi import FastAPI,HTTPException,status,APIRouter
 from random import randrange
-from schema import User
-app= FastAPI()
+from . import schema
+
+router= APIRouter(tags=["BOA USER APP"])
 
 userData=[]
 
@@ -13,12 +14,12 @@ def searchUser(id):
             return i
 
 # get function which uses loadusers to load the userdata
-@app.get("/loadusers")
+@router.get("/loadusers")
 def loadusers():
     return {'message':userData}
 
 # search the user
-@app.get("/loaduser/{id}")
+@router.get("/loaduser/{id}")
 def findUser(id:int):
     data=searchUser(id)
     if data ==None:
@@ -27,7 +28,7 @@ def findUser(id:int):
 
 
 # delete data
-@app.delete("/deleteuser/{id}")
+@router.delete("/deleteuser/{id}")
 def deleteUser(id:int):
     data=searchUser(id)
     if data ==None:
@@ -37,8 +38,8 @@ def deleteUser(id:int):
 
 # update
 
-@app.put("/updateuser/{id}")
-def updateUser(id:int,udata:User):
+@router.put("/updateuser/{id}")
+def updateUser(id:int,udata:schema.User):
     data=searchUser(id)
     if data ==None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail='Given ID not found')
@@ -48,8 +49,8 @@ def updateUser(id:int,udata:User):
     return {"User updated ": data}
 
 # add function which uses adduser to add in the userdata
-@app.post("/adduser",status_code=status.HTTP_201_CREATED)
-def addUser(udata:User):
+@router.post("/adduser",status_code=status.HTTP_201_CREATED)
+def addUser(udata:schema.User):
     data= udata.model_dump()
     data['id']= randrange(0,10000)
     userData.append(data)
@@ -58,3 +59,13 @@ def addUser(udata:User):
 
 
 
+-----
+
+
+
+from fastapi import FastAPI
+from . import crudapp
+
+app= FastAPI()
+
+app.include_router(crudapp.router)
