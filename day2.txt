@@ -1,5 +1,5 @@
 
-from fastapi import FastAPI
+from fastapi import FastAPI,HTTPException,status
 from random import randrange
 from schema import User
 app= FastAPI()
@@ -10,7 +10,7 @@ userData=[]
 def searchUser(id):
     for i,v in enumerate(userData):
         if v['id']== id:
-            return v
+            return i
 
 # get function which uses loadusers to load the userdata
 @app.get("/loadusers")
@@ -21,10 +21,12 @@ def loadusers():
 @app.get("/loaduser/{id}")
 def findUser(id:int):
     data=searchUser(id)
+    if data ==None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail='Given ID not found')
     return {"User Details ": data}
 
 # add function which uses adduser to add in the userdata
-@app.post("/adduser")
+@app.post("/adduser",status_code=status.HTTP_201_CREATED)
 def addUser(udata:User):
     data= udata.model_dump()
     data['id']= randrange(0,10000)
