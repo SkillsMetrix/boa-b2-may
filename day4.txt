@@ -1,26 +1,47 @@
-- name: Update apt and install nginx
-  apt:
-    name: nginx
-    state: latest
-    update_cache: yes
-
-- name: copy index.html
-  template: src=index.html dest=/usr/share/nginx/html/index.html
-
-- name: update update.html
-  template: src=update.html dest=/usr/share/nginx/html/index.html
-  notify: 
-    - Restart Nginx
-
----
-- hosts: db
-  become: true
+- name: vardemo
+  hosts: db
   gather_facts: False
-  roles:
-    - demo-handler
+  become: true
 
-  handlers:
-    - name: Restart Nginx
-      service:
-        name: nginx
-        state: restarted
+  vars:
+    # String variable
+    username_firstname: 'amit kumar'
+    # boolean value
+    is_enabled: true
+    #list
+    users:
+      - admin
+      - manager
+      - qa
+    #dict var
+    users_pro:
+      admin: hr
+      manager: hrms
+      qa: finance
+    # newsted var
+
+    project_details:
+      - name: Banking
+        users:
+          - admin
+          - qa
+      - name: Gov
+        users:
+          - manager
+          - admin
+  
+  tasks:
+    - name: print string value
+      debug:
+        var: username_firstname
+
+    - name: print array value
+      debug:
+        var: users
+
+    - name: print dict value
+      debug:
+        var: project_details
+    - name: print specific value
+      debug:
+        var: users[1]
