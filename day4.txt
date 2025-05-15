@@ -1,0 +1,125 @@
+from operator import index
+from random import randrange
+from fastapi import FastAPI, HTTPException, Response
+from fastapi.params import Body
+from pydantic import BaseModel
+from fastapi import status
+
+app = FastAPI()
+
+class Post(BaseModel):
+    title:str
+    content:str
+
+@app.get("/hello")
+async def root2():
+
+    return {"message": "Welcome to hello"}
+
+
+@app.get("/newget")
+def hello():
+    return {"name": "hello user"}
+
+
+@app.post("/create")
+def root2(payload: dict = Body(...)):
+    print(payload)
+    return {"message": f"title {payload['title']} content: {payload['content']}"}
+
+@app.post("/create2")
+def createPost(newPost:Post):
+    print(newPost)
+    print(newPost.model_dump())
+    return {"data":newPost}
+
+@app.post("/create21",status_code=status.HTTP_201_CREATED)
+def createPost(newPost:Post):
+    print(newPost)
+    print(newPost.model_dump())
+    return {"data":newPost}
+
+my_post=[{"title":'waoo app',"content":"post-1","id":1}]
+@app.post("/create3")
+def createPost(newPost:Post):
+    post_dict=newPost.dict()
+    post_dict['id']=randrange(0,10000000)
+    my_post.append(post_dict)
+    print(newPost)
+    print(newPost.model_dump())
+    return {"data":post_dict}
+
+
+@app.get("/loadall")
+def loadAll():
+    return {"data": my_post}
+
+
+def findPost(id):
+    for p in my_post:
+        if p['id'] == id:
+            return p
+
+
+def findPost2(id):
+    for i, p in enumerate (my_post):
+        if p['id'] == id:
+            return i
+@app.get("/loadall/{id}")
+def loadAll(id):
+    print(id)
+    return {"data": f"here is a post {id}"}
+
+@app.get("/loadpost/{id}")
+def loadPostById(id:int):
+    post=findPost(id)
+    print(post)
+    return {"data": post}
+
+
+@app.get("/loadpost2/{id}")
+def loadPostsById(id:int,response:Response):
+
+    post=findPost(id)
+    if not post:
+        response.status_code=status.HTTP_404_NOT_FOUND
+        print (post)
+        return {"message":"somethig not found"}
+    else :
+        print (post)
+        return {"post_details": post}
+    
+@app.get("/loadpost3/{id}")
+def loadPostsById(id:int,response:Response):
+
+    post=findPost(id)
+    if not post:
+       raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Given ID not found")
+    else:
+        return {"post_details": post}
+    
+@app.delete("/deletepost/{id}",status_code=status.HTTP_204_NO_CONTENT)
+def loadPostsById(id:int):
+
+    index=findPost2(id)
+    if index == None:
+      raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Given ID not found")
+
+    my_post.pop(index)
+    return {"post_deleted": index}
+
+
+    
+@app.put("/updatepost/{id}")
+def updatePost(id:int,post:Post):
+      print(post)
+      index=findPost2(id)
+      if index == None:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Given ID not found")
+      post_dict=post.model_dump()
+      post_dict['id']=id
+      my_post[index]=post_dict
+      return {"data":post_dict}
+ 
+
+
